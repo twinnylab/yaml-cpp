@@ -1,6 +1,6 @@
 # 3.5 is actually available almost everywhere, but this a good minimum
 cmake_minimum_required(VERSION 3.4)
-project(YAML_CPP VERSION 0.6.3 LANGUAGES CXX)
+project(yaml-cpp VERSION 0.6.3 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
 include(CMakeDependentOption)
@@ -8,16 +8,17 @@ include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 include(CTest)
 
-find_program(YAML_CPP_CLANG_FORMAT_EXE NAMES clang-format)
+find_program(yaml-cpp_CLANG_FORMAT_EXE NAMES clang-format)
 
-option(YAML_CPP_BUILD_CONTRIB "Enable yaml-cpp contrib in library" ON)
-option(YAML_CPP_BUILD_TOOLS "Enable parse tools" ON)
+
+option(yaml-cpp_BUILD_CONTRIB "Enable yaml-cpp contrib in library" ON)
+option(yaml-cpp_BUILD_TOOLS "Enable parse tools" ON)
 option(YAML_BUILD_SHARED_LIBS "Build yaml-cpp shared library" ${BUILD_SHARED_LIBS})
 
-cmake_dependent_option(YAML_CPP_BUILD_TESTS
+cmake_dependent_option(yaml-cpp_BUILD_TESTS
   "Enable yaml-cpp tests" ON
   "BUILD_TESTING;CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR" OFF)
-cmake_dependent_option(YAML_CPP_INSTALL
+cmake_dependent_option(yaml-cpp_INSTALL
   "Enable generation of yaml-cpp install targets" ON
   "CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR" OFF)
 cmake_dependent_option(YAML_MSVC_SHARED_RT
@@ -102,11 +103,11 @@ target_compile_options(yaml-cpp
 target_compile_definitions(yaml-cpp
   PRIVATE
     $<${build-windows-dll}:${PROJECT_NAME}_DLL>
-    $<$<NOT:$<BOOL:${YAML_CPP_BUILD_CONTRIB}>>:YAML_CPP_NO_CONTRIB>)
+    $<$<NOT:$<BOOL:${yaml-cpp_BUILD_CONTRIB}>>:yaml-cpp_NO_CONTRIB>)
 
 target_sources(yaml-cpp
   PRIVATE
-    $<$<BOOL:${YAML_CPP_BUILD_CONTRIB}>:${yaml-cpp-contrib-sources}>
+    $<$<BOOL:${yaml-cpp_BUILD_CONTRIB}>:${yaml-cpp-contrib-sources}>
     ${yaml-cpp-sources})
 
 set_target_properties(yaml-cpp PROPERTIES
@@ -126,7 +127,7 @@ write_basic_package_version_file(
 
 configure_file(yaml-cpp.pc.in yaml-cpp.pc @ONLY)
 
-if (YAML_CPP_INSTALL)
+if (yaml-cpp_INSTALL)
 	install(TARGETS yaml-cpp
     EXPORT yaml-cpp-targets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -145,15 +146,15 @@ if (YAML_CPP_INSTALL)
     DESTINATION ${CMAKE_INSTALL_DATADIR}/pkgconfig)
 endif()
 
-if(YAML_CPP_BUILD_TESTS)
+if(yaml-cpp_BUILD_TESTS)
 	add_subdirectory(test)
 endif()
 
-if(YAML_CPP_BUILD_TOOLS)
+if(yaml-cpp_BUILD_TOOLS)
 	add_subdirectory(util)
 endif()
 
-if (YAML_CPP_CLANG_FORMAT_EXE)
+if (yaml-cpp_CLANG_FORMAT_EXE)
   add_custom_target(format
     COMMAND clang-format --style=file -i $<TARGET_PROPERTY:yaml-cpp,SOURCES>
     COMMENT "Running clang-format"
